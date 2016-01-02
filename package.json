@@ -10,8 +10,8 @@
     "start": "node index.js"
   },
   "engines":{
-    "node: '0.12.9"
-    },
+    "node": "0.12.9"
+  },
   "dependencies": {
     "knex": "~0.5.7",
     "bookshelf": "~0.6.4",
