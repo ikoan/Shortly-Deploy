@@ -3,6 +3,36 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     concat: {
+      basic_and_extras: {
+        files: {
+          'dist/serverConcatFiles.js' : ['app/collections/links.js', 
+                                        'app/collections/users.js', 
+                                        'app/models/link.js', 
+                                        'app/models/user.js', 
+                                        'app/config.js', 
+                                        'lib/request-handler.js',
+                                        'lib/utility.js',
+                                        'server.js',
+                                        'index.js'
+                                        ],
+
+          'dist/clientConcatFiles.js' : ['public/client/app.js',
+                                        'public/client/createLinkView.js',
+                                        'public/client/link.js',
+                                        'public/client/links.js',
+                                        'public/client/linksView.js',
+                                        'public/client/linkView.js',
+                                        'public/client/router.js'
+                                        ],
+
+          'dist/libConcatFiles.js' : ['public/lib/backbone.js',
+                                      'public/lib/handlebars.js',
+                                      'public/lib/jquery.js',
+                                      'public/lib/undscore.js',
+                                      ]
+
+        }
+      }
     },
 
     mochaTest: {
@@ -94,6 +124,8 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('build', [
+    //1) jshint to check for errors, 2) next, concat files, 3) minify...
+    'jshint', 'concat', 'uglify', 'cssmin'
   ]);
 
   grunt.registerTask('upload', function(n) {
@@ -105,6 +137,10 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('deploy', [
+    // add your deploy tasks here
+  ]);
+
+  grunt.registerTask('default', [
     // add your deploy tasks here
   ]);
 
