@@ -117,11 +117,12 @@ module.exports = function(grunt) {
     shell: {
       prodServer: {
         //git push
-          command: 'git add .; git commit -m "production"; git push heroku master'
-        // ,
-        // 'git-commit-build': {
-        //   command: 'git commit -m "build"'
-        // }
+          command: 'git push heroku master',
+          options: {
+            stdout: true,
+            stderr: true,
+            failOnError: true
+          }
       }
     }
   });
@@ -154,19 +155,19 @@ module.exports = function(grunt) {
   ////////////////////////////////////////////////////
 
   grunt.registerTask('test', [
+    'jshint',
     'mochaTest'
   ]);
 
   grunt.registerTask('build', [
     //1) jshint to check for errors, 2) next, concat files, 3) minify...
-    'jshint', 'concat', 'uglify', 'cssmin'
+    'concat', 'uglify', 'cssmin'
   ]);
 
   grunt.registerTask('upload', function(n) {
     if(grunt.option('prod')) {
       // add your production server task here
       // git commit origin master
-      //'shell:git-add-dist'
        grunt.task.run([ 'shell:prodServer' ]);
     } else {
       grunt.task.run([ 'server-dev' ]);
@@ -176,6 +177,8 @@ module.exports = function(grunt) {
   grunt.registerTask('deploy', [
     // add your deploy tasks here
     //'jshint', 'mochaTest'
+    'test',
+    'build',
     'upload'
   ]);
 
@@ -184,7 +187,4 @@ module.exports = function(grunt) {
     //Don't need to put anything here unless you want it to run when you just type 'grunt' in command line
     'build'
   ]);
-
-  //grunt.registerTask('heroku:production', 'clean less mincss');
-
 };
