@@ -15,6 +15,7 @@ Icon
 
 # Build files
 public/dist/
+# public/dist/ #We want these files to be on Heroku and not ignored?
 
 # Node modules
 node_modules/

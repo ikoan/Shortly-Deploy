@@ -2,21 +2,22 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    //multiple sources and multiple dests.
     concat: {
-      basic_and_extras: {
+      js: {
         files: {
-          'dist/serverConcatFiles.js' : ['app/collections/links.js', 
-                                        'app/collections/users.js', 
-                                        'app/models/link.js', 
-                                        'app/models/user.js', 
-                                        'app/config.js', 
-                                        'lib/request-handler.js',
-                                        'lib/utility.js',
-                                        'server.js',
-                                        'index.js'
-                                        ],
+          // 'dist/serverConcatFiles.js' : ['app/collections/links.js', 
+          //                               'app/collections/users.js', 
+          //                               'app/models/link.js', 
+          //                               'app/models/user.js', 
+          //                               'app/config.js', 
+          //                               'lib/request-handler.js',
+          //                               'lib/utility.js',
+          //                               'server.js',
+          //                               'index.js'
+          //                               ],
 
-          'dist/clientConcatFiles.js' : ['public/client/app.js',
+          'public/dist/clientConcatFiles.js' : ['public/client/app.js',
                                         'public/client/createLinkView.js',
                                         'public/client/link.js',
                                         'public/client/links.js',
@@ -25,7 +26,7 @@ module.exports = function(grunt) {
                                         'public/client/router.js'
                                         ],
 
-          'dist/libConcatFiles.js' : ['public/lib/backbone.js',
+          'public/dist/libConcatFiles.js' : ['public/lib/backbone.js',
                                       'public/lib/handlebars.js',
                                       'public/lib/jquery.js',
                                       'public/lib/undscore.js',
@@ -33,7 +34,14 @@ module.exports = function(grunt) {
 
         }
       }
-    },
+    },    
+    //OR multiple sources and single dest.
+    // concat: {
+    //   js: {
+    //     src: ['public/client/app.js', 'public/client/createLinkView.js', 'public/client/link.js', 'public/client/links.js','public/client/linksView.js', 'public/client/linkView.js', 'public/client/router.js'],
+    //     dest: 'public/dist/build.js'
+    //   },
+    // },
 
     mochaTest: {
       test: {
@@ -49,13 +57,28 @@ module.exports = function(grunt) {
         script: 'server.js'
       }
     },
-
+    //minify js
     uglify: {
+      js: {
+        files: {
+          'public/dist/clientConcatFiles.js' : ['public/dist/clientConcatFiles.js'],
+          'public/dist/libConcatFiles.js' : ['public/dist/libConcatFiles.js']
+        }
+      }
     },
 
     jshint: {
       files: [
         // Add filespec list here
+        // when we run grunt build, then jsHint runs first and checks the client files
+        // No need to jshint /lib files
+        'public/client/app.js',
+        'public/client/createLinkView.js',
+        'public/client/link.js',
+        'public/client/links.js',
+        'public/client/linksView.js',
+        'public/client/linkView.js',
+        'public/client/router.js'
       ],
       options: {
         force: 'true',
@@ -68,6 +91,10 @@ module.exports = function(grunt) {
     },
 
     cssmin: {
+      css: {
+        src: 'public/style.css',
+        dest: 'public/dist/style.css'
+      }
     },
 
     watch: {
@@ -89,10 +116,17 @@ module.exports = function(grunt) {
 
     shell: {
       prodServer: {
+        //git push
+          command: 'git add .; git commit -m "production"; git push heroku master'
+        // ,
+        // 'git-commit-build': {
+        //   command: 'git commit -m "build"'
+        // }
       }
-    },
+    }
   });
 
+//grunt production(production is for Heroku) //grunt development(is for local server)
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
@@ -131,6 +165,9 @@ module.exports = function(grunt) {
   grunt.registerTask('upload', function(n) {
     if(grunt.option('prod')) {
       // add your production server task here
+      // git commit origin master
+      //'shell:git-add-dist'
+       grunt.task.run([ 'shell:prodServer' ]);
     } else {
       grunt.task.run([ 'server-dev' ]);
     }
@@ -138,11 +175,16 @@ module.exports = function(grunt) {
 
   grunt.registerTask('deploy', [
     // add your deploy tasks here
+    //'jshint', 'mochaTest'
+    'upload'
   ]);
 
   grunt.registerTask('default', [
-    // add your deploy tasks here
+    // add your default tasks here
+    //Don't need to put anything here unless you want it to run when you just type 'grunt' in command line
+    'build'
   ]);
 
+  //grunt.registerTask('heroku:production', 'clean less mincss');
 
 };
